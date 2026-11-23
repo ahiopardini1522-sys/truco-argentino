@@ -1,18 +1,33 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Truco</title>
 <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow:wght@600;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}
-body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 38%,#1f6340 0%,#14472b 70%,#0c2e1a 100%);color:#f6f1e4;font:17px/1.4 Barlow,system-ui,sans-serif;padding:24px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100dvh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 35%,#2c8a57 0%,#1f6a43 35%,#0f4127 75%,#082414 100%);color:#f6f1e4;font:17px/1.4 Barlow,system-ui,sans-serif;padding:24px;user-select:none}
 .m{width:100%;max-width:380px;text-align:center}
-h1{font:56px/1 'Alfa Slab One',serif;margin:0 0 6px;color:#f3c34f}
-p{margin:0 0 28px;opacity:.85}
-a{display:block;text-decoration:none;color:#2a1d05;background:#f3c34f;border-radius:16px;padding:20px;font:24px/1 'Alfa Slab One',serif;margin-bottom:14px;box-shadow:0 5px 0 #9a7418}
-a.b{background:#fbf7ec;box-shadow:0 5px 0 #a99f86;color:#1f6340}
-a:active{transform:translateY(3px);box-shadow:0 2px 0 #9a7418}
-</style></head><body><div class="m">
+.fan{position:relative;height:200px;margin-bottom:8px}
+.fan .c{position:absolute;left:50%;top:14px;width:104px;aspect-ratio:2/3;border-radius:9px;overflow:hidden;box-shadow:0 14px 28px #0009;transform-origin:50% 115%;animation:in .7s cubic-bezier(.2,.8,.3,1) backwards}
+.fan .c svg{display:block;width:100%;height:100%}
+@keyframes in{from{transform:translateX(-50%) rotate(0deg);opacity:0}}
+h1{font:62px/1 'Alfa Slab One',Georgia,serif;margin:0 0 4px;color:#f3c34f;text-shadow:0 4px 0 #0005}
+p{margin:0 0 26px;opacity:.85}
+a{display:block;text-decoration:none;color:#2a1d05;background:linear-gradient(#ffd56a,#e0a92c);border-radius:18px;padding:20px;font:23px/1 'Alfa Slab One',Georgia,serif;margin-bottom:14px;box-shadow:0 6px 0 #8f6a12}
+a small{display:block;font:600 14px Barlow,sans-serif;margin-top:6px;opacity:.75}
+a.b{background:linear-gradient(#fffaf0,#e9dfc8);box-shadow:0 6px 0 #9c8f72;color:#1f6a43}
+a:active{transform:translateY(4px);box-shadow:0 2px 0 #8f6a12}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+<script src="js/cards.js"></script>
+</head><body><div class="m">
+<div class="fan" id="fan"></div>
 <h1>Truco</h1><p>Argentino, de mesa de bodegón</p>
-<a href="truco.html">Jugar contra la Compu</a>
-<a class="b" href="anotador.html">Anotador</a>
-</div></body></html>
+<a href="truco.html">Jugar<small>Mano a mano o de a cuatro contra la Compu</small></a>
+<a class="b" href="anotador.html">Anotador<small>Con fósforos, historial y voz</small></a>
+</div>
+<script>
+Naipes.inject(document);
+const cs=[{n:7,s:'oro'},{n:7,s:'espada'},{n:1,s:'basto'},{n:1,s:'espada'}];
+document.getElementById('fan').innerHTML=cs.map((c,k)=>`<div class="c" style="transform:translateX(-50%) rotate(${(k-1.5)*14}deg);animation-delay:${k*.08}s">${Naipes.svg(c)}</div>`).join('');
+</script>
+</body></html>

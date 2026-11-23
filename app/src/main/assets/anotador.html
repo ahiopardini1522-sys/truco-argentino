@@ -1,95 +1,194 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Anotador de truco</title>
 <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-/* VOICE: pizarra de bodegón, a mano
-IDEA: los fósforos en cuadraditos de cinco, como se anota en la mesa
-PICTURE: dos columnas de fósforos que se van armando
+/* VOICE: pizarra de bodegón, a mano, rápida de usar en la mesa
+IDEA: los fósforos en cuadraditos de cinco, como se anota de verdad
+PICTURE: columnas de fósforos que se van armando, con la raya de las buenas
 COLOUR and TYPE: pizarra verde oscura, palito madera, cabeza roja; Alfa Slab One + Barlow
-LAYOUT: nombres y puntos arriba, fósforos al centro, botones grandes abajo */
-:root{color-scheme:dark;--bg:#1c2b25;--bg2:#24372f;--ink:#f1ede2;--stick:#e8c78a;--head:#e2483a;--gold:#f3c34f}
-*{box-sizing:border-box;min-width:0}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 Barlow,system-ui,sans-serif;overflow-x:clip;-webkit-tap-highlight-color:transparent}
+LAYOUT: barra con opciones, columnas de equipos, botones grandes abajo de cada uno */
+:root{color-scheme:dark;--bg:#17251f;--bg2:#21352c;--ink:#f1ede2;--stick:#e8c78a;--head:#e2483a;--gold:#f3c34f}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg) radial-gradient(ellipse at 50% 0%,#24392f,var(--bg) 70%);color:var(--ink);font:16px/1.4 Barlow,system-ui,sans-serif;overflow-x:clip;user-select:none;-webkit-user-select:none;min-height:100dvh}
 button,input{font:inherit;color:inherit}
-button{cursor:pointer;border:0}
+button{cursor:pointer;border:0;background:none}
 button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-.app{max-width:560px;margin:0 auto;padding:12px 12px 20px}
-.bar{display:flex;gap:8px;align-items:center;margin-bottom:10px}
-.bar h1{font:22px/1 'Alfa Slab One',serif;margin:0;flex:1}
-.seg{display:flex;background:var(--bg2);border-radius:12px;padding:3px}
-.seg button{min-height:40px;padding:0 14px;border-radius:9px;background:none;font-weight:700}
+.app{max-width:620px;margin:0 auto;padding:max(10px,env(safe-area-inset-top)) 10px max(16px,env(safe-area-inset-bottom))}
+.bar{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.bar h1{font:24px/1 'Alfa Slab One',Georgia,serif;margin:0;flex:1}
+.ic{min-height:40px;padding:0 12px;border-radius:12px;background:var(--bg2);font-weight:700;font-size:14px;border:1px solid #ffffff1c}
+.opts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.seg{display:flex;background:var(--bg2);border-radius:12px;padding:3px;gap:2px}
+.seg button{min-height:38px;padding:0 12px;border-radius:9px;font-weight:700;font-size:14px}
 .seg button.on{background:var(--gold);color:#2a1d05}
-.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
-.col{background:var(--bg2);border-radius:16px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:8px;border:2px solid transparent}
-.col.win{border-color:var(--gold)}
-.col input{width:100%;background:transparent;border:0;border-bottom:2px dashed rgba(255,255,255,.25);text-align:center;font-weight:700;font-size:18px;padding:4px}
-.pts{font:46px/1 'Alfa Slab One',serif;color:var(--gold)}
+.cols{display:grid;gap:8px}
+.cols.n2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cols.n3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.col{background:var(--bg2);border-radius:18px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;border:2px solid transparent;box-shadow:0 6px 16px #0006}
+.col.lead{border-color:#f3c34f55}
+.col.win{border-color:var(--gold);box-shadow:0 0 0 4px #f3c34f33,0 6px 16px #0006}
+.col input{width:100%;background:transparent;border:0;border-bottom:2px dashed #ffffff30;text-align:center;font-weight:700;font-size:18px;padding:4px 2px;user-select:text}
+.pts{font:50px/1 'Alfa Slab One',Georgia,serif;color:var(--gold)}
+.n3 .pts{font-size:40px}
+.pts.bump{animation:bump .4s}
+@keyframes bump{40%{transform:scale(1.3)}}
 .sub{font-size:13px;opacity:.75;height:18px}
-.boxes{display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 0}
-.boxes svg{width:min(26vw,76px);height:min(26vw,76px);display:block}
-.sep{width:100%;text-align:center;font-size:13px;letter-spacing:.02em;opacity:.8;border-top:2px solid rgba(255,255,255,.3);padding-top:3px;margin:4px 0}
-.plus{width:100%;min-height:64px;border-radius:14px;background:var(--head);font:28px/1 'Alfa Slab One',serif;box-shadow:0 4px 0 #8f241b}
-.plus:active{transform:translateY(3px);box-shadow:0 1px 0 #8f241b}
-.minus{display:flex;gap:6px;width:100%}
-.minus button{flex:1;min-height:44px;border-radius:12px;background:rgba(255,255,255,.1);font-weight:700}
-.wins{font-size:13px;opacity:.8}
+.boxes{display:flex;flex-direction:column;align-items:center;gap:2px;padding:2px 0}
+.boxes svg{width:min(23vw,74px);height:min(23vw,74px);display:block}
+.n3 .boxes svg{width:min(19vw,60px);height:min(19vw,60px)}
+.t30 .boxes svg{width:min(16vw,54px);height:min(16vw,54px)}
+.t30 .pts{font-size:42px}
+.boxes svg line{stroke-dasharray:60;stroke-dashoffset:0}
+.boxes svg .nw line{animation:draw .35s ease-out}
+.boxes svg .nw circle{animation:fade .35s ease-out}
+@keyframes draw{from{stroke-dashoffset:60}}
+@keyframes fade{from{opacity:0}}
+.sep{width:100%;text-align:center;font-size:12px;opacity:.85;border-top:2px solid #ffffff55;padding-top:2px;margin:3px 0;font-weight:700;color:var(--gold)}
+.plus{width:100%;min-height:64px;border-radius:15px;background:linear-gradient(#ee5a4c,#c2352a);font:28px/1 'Alfa Slab One',Georgia,serif;box-shadow:0 5px 0 #7d1f17}
+.plus:active{transform:translateY(4px);box-shadow:0 1px 0 #7d1f17}
+.plus:disabled{opacity:.4}
+.mini{display:flex;gap:5px;width:100%}
+.mini button{flex:1;min-height:44px;border-radius:12px;background:#ffffff16;font-weight:700;border:1px solid #ffffff20}
+.wins{font-size:12px;opacity:.75;text-align:center}
 .foot{display:flex;gap:8px;margin-top:12px}
-.foot button{flex:1;min-height:48px;border-radius:12px;background:var(--bg2);font-weight:700;border:2px solid rgba(255,255,255,.15)}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:16px}
+.foot button{flex:1;min-height:50px;border-radius:13px;background:var(--bg2);font-weight:700;border:1px solid #ffffff22}
+.ov{position:fixed;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;padding:16px;z-index:9}
 .ov[hidden]{display:none}
-.box{background:var(--ink);color:#1c2b25;border-radius:18px;padding:22px;max-width:360px;width:100%;text-align:center}
-.box h2{font:30px/1.05 'Alfa Slab One',serif;margin:0 0 8px}
+.box{background:#f6f1e4;color:#17251f;border-radius:20px;padding:20px;max-width:400px;width:100%;max-height:calc(100dvh - 32px);overflow:auto;animation:pop .3s}
+@keyframes pop{from{opacity:0;scale:.85}}
+.box h2{font:30px/1.05 'Alfa Slab One',Georgia,serif;margin:0 0 8px;text-align:center}
+.box p{text-align:center;margin:4px 0}
 .box .r{display:flex;gap:8px;margin-top:14px}
-.box button{flex:1;min-height:48px;border-radius:12px;background:#1c2b25;color:var(--ink);font-weight:700}
-.box button.alt{background:#fff;color:#1c2b25;border:2px solid #1c2b25}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
-</style></head><body>
+.box .r button{flex:1;min-height:48px;border-radius:12px;background:#17251f;color:#f6f1e4;font-weight:700}
+.box .r button.alt{background:#fff;color:#17251f;border:2px solid #17251f}
+.hist{list-style:none;padding:0;margin:8px 0}
+.hist li{padding:8px 2px;border-bottom:1px solid #ddd5c3;font-size:14px}
+.hist li small{display:block;color:#7a6a5a}
+.hist li b{color:#1f6a43}
+.tot{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:6px 0}
+.tot span{background:#e6dfcd;border-radius:10px;padding:3px 10px;font-size:13px;font-weight:700}
+.empty{text-align:center;color:#7a6a5a;padding:14px 0}
+.sw{display:flex;justify-content:space-between;align-items:center;padding:8px 2px;border-bottom:1px solid #ddd5c3;font-weight:700}
+.sw button{min-width:72px;min-height:38px;border-radius:20px;background:#d8d0bf;font-weight:700;color:#17251f}
+.sw button.on{background:#1f6a43;color:#fff}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<script src="js/audio.js"></script>
+</head><body>
 <div class="app">
- <div class="bar"><h1>Anotador</h1><div class="seg" id="seg"><button data-t="15">15</button><button data-t="30">30</button></div></div>
+ <div class="bar"><h1>Anotador</h1><button class="ic" id="histBtn">Historial</button><button class="ic" id="cfgBtn">Ajustes</button></div>
+ <div class="opts"><div class="seg" id="segT"></div><div class="seg" id="segN"></div></div>
  <div class="cols" id="cols"></div>
  <div class="foot"><button id="undo">Deshacer</button><button id="reset">Nueva partida</button></div>
 </div>
 <div class="ov" id="ov" hidden><div class="box" id="box"></div></div>
 <script>
 {
-const KEY='anotador-truco';
-let S={names:['Nosotros','Ellos'],target:30,s:[0,0],hist:[],wins:[0,0],done:false};
-try{const x=JSON.parse(localStorage.getItem(KEY));if(x&&x.s)S={...S,...x}}catch(e){}
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
-const $=id=>document.getElementById(id);
-const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-// palitos: arriba, derecha, abajo, izquierda, diagonal
-const L=[[10,9,50,11],[51,10,49,50],[50,51,10,49],[9,50,11,10],[13,47,47,13]];
-function stick(l){const[x1,y1,x2,y2]=l;return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#e8c78a" stroke-width="4" stroke-linecap="round"/><circle cx="${x2}" cy="${y2}" r="3.8" fill="#e2483a"/>`}
-function boxSVG(n){return `<svg viewBox="0 0 60 60" aria-hidden="true"><rect x="4" y="4" width="52" height="52" rx="6" fill="none" stroke="rgba(255,255,255,.07)"/>${L.slice(0,n).map(stick).join('')}</svg>`}
-function col(i){const s=S.s[i],nb=S.target/5;let b='';
- for(let k=0;k<nb;k++){if(S.target===30&&k===3)b+='<div class="sep">buenas</div>';b+=boxSVG(Math.max(0,Math.min(5,s-5*k)))}
- const sub=S.target===30?(s<15?`${s} malas`:`${s-15} buenas`):'';
- return `<div class="col${S.done&&s>=S.target?' win':''}"><input value="${esc(S.names[i])}" data-n="${i}" maxlength="16" aria-label="Nombre del equipo">
-  <div class="pts">${s}</div><div class="sub">${sub}</div>
-  <div class="boxes">${b}</div>
-  <button class="plus" data-add="${i}" data-v="1" aria-label="Sumar 1 a ${esc(S.names[i])}">+1</button>
-  <div class="minus"><button data-add="${i}" data-v="2">+2</button><button data-add="${i}" data-v="3">+3</button><button data-add="${i}" data-v="-1">−1</button></div>
-  <div class="wins">Partidas ganadas: ${S.wins[i]}</div></div>`}
-function render(){$('cols').innerHTML=col(0)+col(1);
- document.querySelectorAll('#seg button').forEach(b=>b.classList.toggle('on',+b.dataset.t===S.target))}
-function add(i,v){if(S.done&&v>0)return;const before=S.s[i];S.s[i]=Math.max(0,Math.min(S.target,S.s[i]+v));
- if(S.s[i]===before)return;S.hist.push([i,S.s[i]-before]);
- if(S.s[i]>=S.target){S.done=true;S.wins[i]++;S.hist.push(['w',i]);showWin(i)}
- save();render()}
-function undo(){const h=S.hist.pop();if(!h)return;
- if(h[0]==='w'){S.wins[h[1]]--;S.done=false;const p=S.hist.pop();if(p)S.s[p[0]]-=p[1]}
- else S.s[h[0]]-=h[1];
- $('ov').hidden=true;save();render()}
-function reset(){S.s=[0,0];S.hist=[];S.done=false;$('ov').hidden=true;save();render()}
-function showWin(i){$('box').innerHTML=`<h2>¡Ganó ${esc(S.names[i])}!</h2><p>${S.s[0]} a ${S.s[1]}</p><div class="r"><button id="again">Nueva partida</button><button class="alt" id="back">Deshacer</button></div>`;$('ov').hidden=false;$('again').focus()}
-document.addEventListener('click',e=>{const t=e.target;
- const a=t.closest('[data-add]');if(a){add(+a.dataset.add,+a.dataset.v);return}
- const sg=t.closest('#seg button');if(sg){const nt=+sg.dataset.t;if(nt!==S.target){S.target=nt;reset()}return}
- if(t.id==='undo'||t.id==='back')return undo();
- if(t.id==='reset'||t.id==='again')return reset()});
-document.addEventListener('input',e=>{const n=e.target.dataset.n;if(n!=null){S.names[+n]=e.target.value||'Equipo';save()}});
+const KEY = 'anotador-truco-v2';
+const store = { get(k, d) { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} } };
+let S = Object.assign({ names: ['Nosotros', 'Ellos', 'Los otros'], n: 2, target: 30, s: [0, 0, 0], hist: [], wins: {}, done: false, voice: true, sound: true, vib: true, log: [] }, store.get(KEY, {}));
+Sfx.sound = S.sound; Sfx.voice = S.voice;
+const save = () => store.set(KEY, S);
+const $ = id => document.getElementById(id);
+const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+// palitos: arriba, derecha, abajo, izquierda y la diagonal que cierra
+const L = [[10, 9, 50, 11], [51, 10, 49, 50], [50, 51, 10, 49], [9, 50, 11, 10], [13, 47, 47, 13]];
+const stick = (l, nw) => { const [a, b, c, d] = l; return `<g class="${nw ? 'nw' : ''}"><line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="#e8c78a" stroke-width="4.2" stroke-linecap="round"/><line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="#b98d4a" stroke-width="1.2" stroke-linecap="round" opacity=".6"/><circle cx="${c}" cy="${d}" r="4" fill="#e2483a"/><circle cx="${c - .8}" cy="${d - .8}" r="1.3" fill="#ff9a8a"/></g>`; };
+let fresh = [-1, -1];
+const boxSVG = (cnt, base, ti) => `<svg viewBox="0 0 60 60" aria-hidden="true"><rect x="4" y="4" width="52" height="52" rx="6" fill="none" stroke="#ffffff10"/>${L.slice(0, cnt).map((l, k) => stick(l, fresh[0] === ti && base + k >= fresh[1])).join('')}</svg>`;
+function sub(s) { return S.target === 30 ? (s < 15 ? `${s} malas` : s === 15 ? 'entró a las buenas' : `${s - 15} buenas`) : (S.target - s) + ' para ganar'; }
+function render() {
+  const nb = S.target / 5, lead = Math.max(...S.s.slice(0, S.n));
+  $('segT').innerHTML = [15, 30].map(t => `<button class="${S.target === t ? 'on' : ''}" data-t="${t}">A ${t}</button>`).join('');
+  $('segN').innerHTML = [2, 3].map(t => `<button class="${S.n === t ? 'on' : ''}" data-n="${t}">${t} equipos</button>`).join('');
+  let h = '';
+  for (let i = 0; i < S.n; i++) {
+    const s = S.s[i]; let b = '';
+    for (let k = 0; k < nb; k++) { if (S.target === 30 && k === 3) b += '<div class="sep">buenas</div>'; b += boxSVG(Math.max(0, Math.min(5, s - 5 * k)), 5 * k, i); }
+    const cls = S.done && s >= S.target ? ' win' : s === lead && s > 0 && !S.done ? ' lead' : '';
+    h += `<div class="col${cls}"><input value="${esc(S.names[i])}" data-name="${i}" maxlength="16" aria-label="Nombre del equipo ${i + 1}">
+      <div class="pts${fresh[0] === i ? ' bump' : ''}">${s}</div><div class="sub">${sub(s)}</div>
+      <div class="boxes">${b}</div>
+      <button class="plus" data-add="${i}" data-v="1" ${S.done ? 'disabled' : ''} aria-label="Sumar uno a ${esc(S.names[i])}">+1</button>
+      <div class="mini"><button data-add="${i}" data-v="2">+2</button><button data-add="${i}" data-v="3">+3</button><button data-add="${i}" data-v="-1" aria-label="Restar uno">−1</button></div>
+      <div class="wins">Ganadas: ${S.wins[S.names[i]] || 0}</div></div>`;
+  }
+  $('cols').className = 'cols n' + S.n + (S.target === 30 ? ' t30' : ''); $('cols').innerHTML = h;
+  fresh = [-1, -1];
+}
+let voiceT = null;
+function announce() {
+  clearTimeout(voiceT);
+  voiceT = setTimeout(() => {
+    const parts = []; for (let i = 0; i < S.n; i++) { const s = S.s[i]; parts.push(S.names[i] + ', ' + (S.target === 30 ? (s < 15 ? s + (s === 1 ? ' mala' : ' malas') : s === 15 ? 'quince, entra a las buenas' : (s - 15) + (s - 15 === 1 ? ' buena' : ' buenas')) : s)); }
+    Sfx.speak(parts.join('. '), 0);
+  }, 900);
+}
+function add(i, v) {
+  if (S.done && v > 0) return;
+  const before = S.s[i]; S.s[i] = Math.max(0, Math.min(S.target, S.s[i] + v));
+  if (S.s[i] === before) return;
+  S.log.push([i, S.s[i] - before]);
+  if (v > 0) { fresh = [i, before]; Sfx.play('point'); } else Sfx.play('card');
+  if (S.vib) Sfx.vibrate(18);
+  if (S.s[i] >= S.target) win(i); else announce();
+  save(); render();
+}
+function win(i) {
+  S.done = true; const nm = S.names[i];
+  S.wins[nm] = (S.wins[nm] || 0) + 1; S.log.push(['w', i]);
+  S.hist.unshift({ at: Date.now(), names: S.names.slice(0, S.n), s: S.s.slice(0, S.n), w: i, target: S.target });
+  S.hist = S.hist.slice(0, 60);
+  clearTimeout(voiceT); Sfx.play('win'); Sfx.speak('Ganó ' + nm + ', ' + S.s.slice(0, S.n).join(' a '), 0);
+  setTimeout(() => showWin(i), 350);
+}
+function undo() {
+  const h = S.log.pop(); if (!h) return;
+  if (h[0] === 'w') { const nm = S.names[h[1]]; S.wins[nm] = Math.max(0, (S.wins[nm] || 1) - 1); S.hist.shift(); S.done = false; const p = S.log.pop(); if (p) S.s[p[0]] -= p[1]; }
+  else S.s[h[0]] -= h[1];
+  Sfx.play('card'); $('ov').hidden = true; save(); render(); announce();
+}
+function reset() { S.s = [0, 0, 0]; S.log = []; S.done = false; $('ov').hidden = true; save(); render(); }
+function open(html) { $('box').innerHTML = html; $('ov').hidden = false; }
+function showWin(i) {
+  open(`<h2>¡Ganó ${esc(S.names[i])}!</h2><p style="font:34px 'Alfa Slab One',Georgia,serif">${S.s.slice(0, S.n).join(' – ')}</p><p>${S.wins[S.names[i]]} ${S.wins[S.names[i]] === 1 ? 'partida ganada' : 'partidas ganadas'}</p>
+    <div class="r"><button data-x="reset">Nueva partida</button><button class="alt" data-x="undo">Deshacer</button></div>`);
+}
+function showHist() {
+  const tot = Object.entries(S.wins).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+  const fmt = t => new Date(t).toLocaleString('es-AR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  open(`<h2>Historial</h2>${tot.length ? `<div class="tot">${tot.map(([k, v]) => `<span>${esc(k)}: ${v}</span>`).join('')}</div>` : ''}
+    ${S.hist.length ? `<ul class="hist">${S.hist.map(h => `<li><b>${esc(h.names[h.w])}</b> ganó ${h.s.join(' a ')} <small>${h.names.map(esc).join(' · ')} — a ${h.target} — ${fmt(h.at)}</small></li>`).join('')}</ul>` : '<div class="empty">Todavía no hay partidas terminadas.</div>'}
+    <div class="r"><button data-x="close">Cerrar</button>${S.hist.length ? '<button class="alt" data-x="clear">Borrar todo</button>' : ''}</div>`);
+}
+function showCfg() {
+  const sw = (k, l) => `<div class="sw">${l}<button class="${S[k] ? 'on' : ''}" data-tog="${k}">${S[k] ? 'Sí' : 'No'}</button></div>`;
+  open(`<h2>Ajustes</h2>${sw('voice', 'Voz que canta los puntos')}${sw('sound', 'Sonidos')}${sw('vib', 'Vibrar al anotar')}
+    <div class="r"><button data-x="close">Listo</button><button class="alt" data-x="home">Menú principal</button></div>`);
+}
+document.addEventListener('click', e => {
+  const t = e.target;
+  const a = t.closest('[data-add]'); if (a) return add(+a.dataset.add, +a.dataset.v);
+  const tg = t.closest('[data-t]'); if (tg) { const v = +tg.dataset.t; if (v !== S.target) { S.target = v; reset(); } return; }
+  const tn = t.closest('[data-n]'); if (tn) { const v = +tn.dataset.n; if (v !== S.n) { S.n = v; reset(); } return; }
+  const tog = t.closest('[data-tog]'); if (tog) { const k = tog.dataset.tog; S[k] = !S[k]; Sfx.voice = S.voice; Sfx.sound = S.sound; save(); return showCfg(); }
+  const x = t.closest('[data-x]'); if (x) {
+    const k = x.dataset.x;
+    if (k === 'reset') return reset(); if (k === 'undo') return undo();
+    if (k === 'close') { $('ov').hidden = true; return; }
+    if (k === 'home') { location.href = 'index.html'; return; }
+    if (k === 'clear') { S.hist = []; S.wins = {}; save(); render(); return showHist(); }
+  }
+  if (t.id === 'undo') return undo(); if (t.id === 'reset') return reset();
+  if (t.id === 'histBtn') return showHist(); if (t.id === 'cfgBtn') return showCfg();
+});
+document.addEventListener('change', e => {
+  const n = e.target.dataset.name; if (n == null) return;
+  const old = S.names[+n], nw = e.target.value.trim() || 'Equipo ' + (+n + 1);
+  if (old !== nw && S.wins[old] && !S.wins[nw]) { S.wins[nw] = S.wins[old]; delete S.wins[old]; }
+  S.names[+n] = nw; save(); render();
+});
 render();
 }
 </script>
